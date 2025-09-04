@@ -164,8 +164,21 @@ const OrderDetails = ({ params }) => {
                                                     <td className="text-end py-2">{orderData?.landmark}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className="font-medium py-2">Order note</td>
-                                                    <td className="text-end py-2">{orderData?.ordernote || '---'}</td>
+                                                    <td className="font-medium py-2">Transaction:</td>
+                                                    <td className="text-end py-2">
+                                                        {orderData?.ordernote ? (
+                                                            <a
+                                                                href={orderData.ordernote}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-600 underline hover:text-blue-800"
+                                                            >
+                                                                View Screenshot
+                                                            </a>
+                                                        ) : (
+                                                            '---'
+                                                        )}
+                                                    </td>
                                                 </tr>
 
                                             </tbody>

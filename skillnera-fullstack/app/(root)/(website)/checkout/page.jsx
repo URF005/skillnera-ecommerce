@@ -1,3 +1,4 @@
+// app/root/website/checkout/page.jsx
 'use client'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import WebsiteBreadcrumb from '@/components/Application/Website/WebsiteBreadcrumb'
@@ -13,14 +14,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useActionState, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { z } from 'zod'
 import { FaShippingFast } from "react-icons/fa";
 import { Textarea } from '@/components/ui/textarea'
-import Script from 'next/script'
 import { useRouter } from 'next/navigation'
 
 import loading from '@/public/assets/images/loading.svg'
@@ -47,7 +47,8 @@ const Checkout = () => {
     const [couponCode, setCouponCode] = useState('')
 
     const [placingOrder, setPlacingOrder] = useState(false)
-    const [savingOrder, setSavingOrder] = useState(false)
+    const [screenshot, setScreenshot] = useState(null)
+    const [screenshotError, setScreenshotError] = useState('')
     useEffect(() => {
         if (getVerifiedCartData && getVerifiedCartData.success) {
             const cartData = getVerifiedCartData.data
@@ -134,7 +135,6 @@ const Checkout = () => {
         city: true,
         pincode: true,
         landmark: true,
-        ordernote: true
     }).extend({
         userId: z.string().optional()
     })
@@ -150,7 +150,6 @@ const Checkout = () => {
             city: '',
             pincode: '',
             landmark: '',
-            ordernote: '',
             userId: authStore?.auth?._id,
         }
     })
@@ -162,92 +161,55 @@ const Checkout = () => {
         }
     }, [authStore])
 
-    // get order id 
-    const getOrderId = async (amount) => {
-        try {
-            const { data: orderIdData } = await axios.post('/api/payment/get-order-id', { amount })
-            if (!orderIdData.success) {
-                throw new Error(orderIdData.message)
-            }
-
-            return { success: true, order_id: orderIdData.data }
-
-        } catch (error) {
-            return { success: false, message: error.message }
-        }
-    }
-
     const placeOrder = async (formData) => {
- 
+        if (!screenshot) {
+            setScreenshotError('Transaction screenshot is required')
+            return
+        }
+        setScreenshotError('')
         setPlacingOrder(true)
         try {
-            const generateOrderId = await getOrderId(totalAmount)
-            if (!generateOrderId.success) {
-                throw new Error(generateOrderId.message)
+            // Upload screenshot to Cloudinary
+            const uploadForm = new FormData()
+            uploadForm.append('file', screenshot)
+            uploadForm.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET)
+            const uploadRes = await axios.post(
+                `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+                uploadForm,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            )
+            const url = uploadRes.data.secure_url
+
+            const products = verifiedCartData.map((cartItem) => ({
+                productId: cartItem.productId,
+                variantId: cartItem.variantId,
+                name: cartItem.name,
+                qty: cartItem.qty,
+                mrp: cartItem.mrp,
+                sellingPrice: cartItem.sellingPrice,
+            }))
+
+            const orderData = {
+                ...formData,
+                ordernote: url,
+                products: products,
+                subtotal: subtotal,
+                discount: discount,
+                couponDiscountAmount: couponDiscountAmount,
+                totalAmount: totalAmount
             }
 
-            const order_id = generateOrderId.order_id
+            const { data: paymentResponseData } = await axios.post('/api/payment/save-order', orderData)
 
-            const razOption = {
-                "key": process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                "amount": totalAmount * 100,
-                "currency": "PKR",
-                "name": "E-store",
-                "description": "Payment for order",
-                "image": "https://res.cloudinary.com/dg7efdu9o/image/upload/v1750052410/logo-black_mb1rve.webp",
-                "order_id": order_id,
-                "handler": async function (response) {
-                    setSavingOrder(true)
-                    const products = verifiedCartData.map((cartItem) => (
-                        {
-                            productId: cartItem.productId,
-                            variantId: cartItem.variantId,
-                            name: cartItem.name,
-                            qty: cartItem.qty,
-                            mrp: cartItem.mrp,
-                            sellingPrice: cartItem.sellingPrice,
-                        }
-                    ))
-
-                    const { data: paymentResponseData } = await axios.post('/api/payment/save-order', {
-                        ...formData,
-                        ...response,
-                        products: products,
-                        subtotal: subtotal,
-                        discount: discount,
-                        couponDiscountAmount: couponDiscountAmount,
-                        totalAmount: totalAmount
-                    })
-
-                    if (paymentResponseData.success) {
-                        showToast('success', paymentResponseData.message)
-                        dispatch(clearCart())
-                        orderForm.reset()
-                        router.push(WEBSITE_ORDER_DETAILS(response.razorpay_order_id))
-                        setSavingOrder(false)
-                    } else {
-                        showToast('error', paymentResponseData.message)
-                        setSavingOrder(false)
-                    }
-                },
-                "prefill": {
-                    "name": formData.name,
-                    "email": formData.email,
-                    "contact": formData.phone
-                },
-
-                "theme": {
-                    "color": "#7c3aed"
-                }
+            if (paymentResponseData.success) {
+                showToast('success', paymentResponseData.message)
+                dispatch(clearCart())
+                orderForm.reset()
+                setScreenshot(null)
+                router.push(WEBSITE_ORDER_DETAILS(paymentResponseData.data.order_id))
+            } else {
+                showToast('error', paymentResponseData.message)
             }
-
-            const rzp = new Razorpay(razOption)
-            rzp.on('payment.failed', function (response) {
-                showToast('error', response.error.description)
-            });
-
-            rzp.open()
-
         } catch (error) {
             showToast('error', error.message)
         } finally {
@@ -258,7 +220,7 @@ const Checkout = () => {
     return (
         <div>
 
-            {savingOrder &&
+            {placingOrder &&
                 <div className='h-screen w-screen fixed top-0 left-0 z-50 bg-black/10'>
                     <div className='h-screen flex justify-center items-center'>
                         <Image src={loading.src} height={80} width={80} alt='Loading' />
@@ -419,20 +381,15 @@ const Checkout = () => {
                                         </FormField>
                                     </div>
                                     <div className='mb-3 col-span-2'>
-                                        <FormField
-                                            control={orderForm.control}
-                                            name='ordernote'
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Textarea placeholder="Enter order note" />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        >
-
-                                        </FormField>
+                                        <label htmlFor="screenshot" className='block mb-2'>Upload Transaction Screenshot*</label>
+                                        <input
+                                            type="file"
+                                            id="screenshot"
+                                            accept="image/*"
+                                            onChange={(e) => setScreenshot(e.target.files[0])}
+                                            className="border rounded p-2 w-full"
+                                        />
+                                        {screenshotError && <p className='text-red-500 text-sm mt-1'>{screenshotError}</p>}
                                     </div>
 
                                     <div className='mb-3'>
@@ -467,7 +424,7 @@ const Checkout = () => {
                                                 </td>
                                                 <td className='p-3 text-center'>
                                                     <p className='text-nowrap text-sm'>
-                                                        {product.qty} x {product.sellingPrice.toLocaleString('en-IN', { style: 'currency', currency: 'PKR' })}
+                                                        {product.qty} x {product.sellingPrice.toLocaleString('en-PK', { style: 'currency', currency: 'PKR' })}
                                                     </p>
                                                 </td>
                                             </tr>
@@ -480,25 +437,25 @@ const Checkout = () => {
                                         <tr>
                                             <td className='font-medium py-2'>Subtotal</td>
                                             <td className='text-end py-2'>
-                                                {subtotal.toLocaleString('en-IN', { style: 'currency', currency: 'PKR' })}
+                                                {subtotal.toLocaleString('en-PK', { style: 'currency', currency: 'PKR' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2'>Discount</td>
                                             <td className='text-end py-2'>
-                                                - {discount.toLocaleString('en-IN', { style: 'currency', currency: 'PKR' })}
+                                                - {discount.toLocaleString('en-PK', { style: 'currency', currency: 'PKR' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2'>Coupon Discount</td>
                                             <td className='text-end py-2'>
-                                                -  {couponDiscountAmount.toLocaleString('en-IN', { style: 'currency', currency: 'PKR' })}
+                                                -  {couponDiscountAmount.toLocaleString('en-PK', { style: 'currency', currency: 'PKR' })}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className='font-medium py-2 text-xl'>Total</td>
                                             <td className='text-end py-2'>
-                                                {totalAmount.toLocaleString('en-IN', { style: 'currency', currency: 'PKR' })}
+                                                {totalAmount.toLocaleString('en-PK', { style: 'currency', currency: 'PKR' })}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -549,7 +506,6 @@ const Checkout = () => {
                 </div>
             }
 
-            <Script src='https://checkout.razorpay.com/v1/checkout.js' />
         </div>
     )
 }

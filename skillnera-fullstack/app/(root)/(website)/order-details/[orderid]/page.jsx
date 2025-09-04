@@ -106,10 +106,7 @@ const OrderDetails = async ({ params }) => {
                                                 <td className="font-medium py-2">Landmark</td>
                                                 <td className="text-end py-2">{orderData?.data?.landmark}</td>
                                             </tr>
-                                            <tr>
-                                                <td className="font-medium py-2">Order note</td>
-                                                <td className="text-end py-2">{orderData?.data?.ordernote || '---'}</td>
-                                            </tr>
+
 
                                         </tbody>
                                     </table>
