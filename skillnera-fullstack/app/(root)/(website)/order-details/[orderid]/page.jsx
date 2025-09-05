@@ -103,9 +103,12 @@ const OrderDetails = async ({ params }) => {
                                                 <td className="text-end py-2">{orderData?.data?.pincode}</td>
                                             </tr>
                                             <tr>
-                                                <td className="font-medium py-2">Landmark</td>
-                                                <td className="text-end py-2">{orderData?.data?.landmark}</td>
+                                                <td className="font-medium py-2 align-top">Address</td>
+                                                <td className="text-end py-2 break-words max-w-xs">
+                                                    {orderData?.data?.landmark}
+                                                </td>
                                             </tr>
+
 
 
                                         </tbody>

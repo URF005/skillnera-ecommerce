@@ -160,9 +160,12 @@ const OrderDetails = ({ params }) => {
                                                     <td className="text-end py-2">{orderData?.pincode}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className="font-medium py-2">Landmark</td>
-                                                    <td className="text-end py-2">{orderData?.landmark}</td>
+                                                    <td className="font-medium py-2 align-top">Address</td>
+                                                    <td className="text-end py-2 break-words max-w-xs">
+                                                        {orderData?.landmark}
+                                                    </td>
                                                 </tr>
+
                                                 <tr>
                                                     <td className="font-medium py-2">Transaction:</td>
                                                     <td className="text-end py-2">

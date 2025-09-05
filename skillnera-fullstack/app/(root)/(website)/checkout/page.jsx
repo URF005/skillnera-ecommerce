@@ -395,7 +395,7 @@ const Checkout = () => {
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input placeholder="Landmark*" {...field} />
+                                                            <Input placeholder="Address*" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
