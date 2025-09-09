@@ -47,3 +47,9 @@ export const ADMIN_ORDER_DETAILS = (order_id) => order_id ? `/admin/orders/detai
 // Trash route 
 
 export const ADMIN_TRASH = '/admin/trash'
+// routes/AdminPanelRoute.js
+export const ADMIN_MLM_COMMISSIONS = "/admin/mlm/commissions";
+export const ADMIN_MLM_SETTINGS = "/admin/mlm/settings";
+
+export const ADMIN_MLM_TREE = "/admin/mlm/tree";
+

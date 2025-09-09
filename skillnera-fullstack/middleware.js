@@ -1,54 +1,82 @@
-import { NextResponse } from "next/server"
-import { USER_DASHBOARD, WEBSITE_LOGIN } from "./routes/WebsiteRoute"
-import { jwtVerify } from "jose"
-import { ADMIN_DASHBOARD } from "./routes/AdminPanelRoute"
+import { NextResponse } from "next/server";
+import { USER_DASHBOARD, WEBSITE_LOGIN } from "./routes/WebsiteRoute";
+import { jwtVerify } from "jose";
+import { ADMIN_DASHBOARD } from "./routes/AdminPanelRoute";
 
 export async function middleware(request) {
-    try {
-        const pathname = request.nextUrl.pathname
-        const hasToken = request.cookies.has('access_token')
+  const url = request.nextUrl;
+  const pathname = url.pathname;
 
-        if (!hasToken) {
-            // if the user is not loggedin and trying to access a protected route, redirect to login page. 
-            if (!pathname.startsWith('/auth')) {
-                return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
-            }
-            return NextResponse.next() // Allow access to auth routes if not logged in. 
-        }
+  // ---- 1) Capture ?ref=CODE on any public page ----
+  const ref = url.searchParams.get("ref");
+  // Always create a response so we can attach cookies if needed
+  const response = NextResponse.next();
 
-        // verify token 
-        const access_token = request.cookies.get('access_token').value
-        const { payload } = await jwtVerify(access_token, new TextEncoder().encode(process.env.SECRET_KEY))
+  if (ref) {
+    response.cookies.set("ref_code", ref, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+  }
 
-        const role = payload.role
+  // ---- 2) Route guards (only for protected paths) ----
+  const isAuthRoute = pathname.startsWith("/auth");
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isUserRoute = pathname.startsWith("/my-account");
 
-        // prevent logged-in users from accessing auth routes 
-        if (pathname.startsWith('/auth')) {
-            return NextResponse.redirect(new URL(role === 'admin' ? ADMIN_DASHBOARD : USER_DASHBOARD, request.nextUrl))
-        }
+  const hasToken = request.cookies.has("access_token");
 
-
-        // protect admin route  
-        if (pathname.startsWith('/admin') && role !== 'admin') {
-            return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
-        }
-
-
-        // protect user route  
-
-        if (pathname.startsWith('/my-account') && role !== 'user') {
-            return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
-        }
-
-        return NextResponse.next()
-
-    } catch (error) {
-        console.log(error)
-        return NextResponse.redirect(new URL(WEBSITE_LOGIN, request.nextUrl))
+  try {
+    // If no token:
+    if (!hasToken) {
+      // protect admin & user areas only
+      if (isAdminRoute || isUserRoute) {
+        return NextResponse.redirect(new URL(WEBSITE_LOGIN, url));
+      }
+      // allow access to /auth and all public routes
+      return response;
     }
+
+    // Has token: verify it
+    const access_token = request.cookies.get("access_token").value;
+    const { payload } = await jwtVerify(
+      access_token,
+      new TextEncoder().encode(process.env.SECRET_KEY)
+    );
+
+    const role = payload.role;
+
+    // Block logged-in users from hitting /auth/*
+    if (isAuthRoute) {
+      return NextResponse.redirect(
+        new URL(role === "admin" ? ADMIN_DASHBOARD : USER_DASHBOARD, url)
+      );
+    }
+
+    // Protect /admin for admins only
+    if (isAdminRoute && role !== "admin") {
+      return NextResponse.redirect(new URL(WEBSITE_LOGIN, url));
+    }
+
+    // Protect /my-account for regular users only
+    if (isUserRoute && role !== "user") {
+      return NextResponse.redirect(new URL(WEBSITE_LOGIN, url));
+    }
+
+    // Otherwise allow
+    return response;
+  } catch (error) {
+    console.log(error);
+    return NextResponse.redirect(new URL(WEBSITE_LOGIN, url));
+  }
 }
 
-
+// IMPORTANT: run middleware on ALL non-static, non-API routes
+// so referral capture works on public pages (home, product, etc.)
 export const config = {
-    matcher: ['/admin/:path*', '/my-account/:path*', '/auth/:path*']
-}
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|api).*)",
+  ],
+};

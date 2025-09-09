@@ -5,8 +5,26 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import { LuUserRound } from "react-icons/lu";
 import { IoMdStarOutline } from "react-icons/io";
 import { MdOutlinePermMedia } from "react-icons/md";
-import { RiCoupon2Line } from "react-icons/ri";
-import { ADMIN_CATEGORY_ADD, ADMIN_CATEGORY_SHOW, ADMIN_COUPON_ADD, ADMIN_COUPON_SHOW, ADMIN_CUSTOMERS_SHOW, ADMIN_DASHBOARD, ADMIN_MEDIA_SHOW, ADMIN_ORDER_SHOW, ADMIN_PRODUCT_ADD, ADMIN_PRODUCT_SHOW, ADMIN_PRODUCT_VARIANT_ADD, ADMIN_PRODUCT_VARIANT_SHOW, ADMIN_REVIEW_SHOW } from "@/routes/AdminPanelRoute";
+import { RiCoupon2Line, RiShareForwardLine, RiSettings3Line } from "react-icons/ri"; // +++
+
+import {
+    ADMIN_CATEGORY_ADD,
+    ADMIN_CATEGORY_SHOW,
+    ADMIN_COUPON_ADD,
+    ADMIN_COUPON_SHOW,
+    ADMIN_CUSTOMERS_SHOW,
+    ADMIN_DASHBOARD,
+    ADMIN_MEDIA_SHOW,
+    ADMIN_ORDER_SHOW,
+    ADMIN_PRODUCT_ADD,
+    ADMIN_PRODUCT_SHOW,
+    ADMIN_PRODUCT_VARIANT_ADD,
+    ADMIN_PRODUCT_VARIANT_SHOW,
+    ADMIN_REVIEW_SHOW,
+    ADMIN_MLM_COMMISSIONS,   // +++
+    ADMIN_MLM_SETTINGS,   // +++
+    ADMIN_MLM_TREE
+} from "@/routes/AdminPanelRoute";
 
 
 export const adminAppSidebarMenu = [
@@ -90,4 +108,17 @@ export const adminAppSidebarMenu = [
         url: ADMIN_MEDIA_SHOW,
         icon: MdOutlinePermMedia,
     },
+    {
+        title: "MLM",
+        url: "#",
+        icon: RiShareForwardLine,
+        submenu: [
+            { title: "Commissions", url: ADMIN_MLM_COMMISSIONS },
+            { title: "Settings", url: ADMIN_MLM_SETTINGS, icon: RiSettings3Line }
+        ]
+    },
+    { title: "Referral Tree", url: ADMIN_MLM_TREE }
+
+
+
 ]
