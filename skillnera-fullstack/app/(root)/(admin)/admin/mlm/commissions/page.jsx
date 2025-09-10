@@ -90,14 +90,18 @@ export default function MLMCommissionsPage() {
                     <div className="font-medium">{r.order?.order_id || r.order?._id}</div>
                     <div className="text-xs opacity-70">{r.order?.status}</div>
                   </td>
+
                   <td className="p-3">
                     <div>{r.buyer?.name} ({r.buyer?.email})</div>
+                    <div className="text-xs opacity-70">Phone: {r.buyer?.phone || "-"}</div>
                     <div className="text-xs opacity-70">Code: {r.buyer?.referralCode || "-"}</div>
                   </td>
                   <td className="p-3">
                     <div>{r.earner?.name} ({r.earner?.email})</div>
+                    <div className="text-xs opacity-70">Phone: {r.earner?.phone || "-"}</div>
                     <div className="text-xs opacity-70">Code: {r.earner?.referralCode || "-"}</div>
                   </td>
+
                   <td className="p-3">{r.level}</td>
                   <td className="p-3">{r.baseAmount}</td>
                   <td className="p-3">{r.percent}%</td>

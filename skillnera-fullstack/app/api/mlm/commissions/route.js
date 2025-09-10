@@ -18,8 +18,8 @@ export async function GET(request) {
 
     const items = await MLMCommission.find(q)
       .populate("order", "order_id subtotal totalAmount status")
-      .populate("earner", "name email referralCode")
-      .populate("buyer", "name email referralCode")
+      .populate("earner", "name email phone referralCode")
+      .populate("buyer", "name email phone referralCode")
       .sort({ createdAt: -1 })
       .lean();
 

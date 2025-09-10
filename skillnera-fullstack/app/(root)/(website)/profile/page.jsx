@@ -175,13 +175,26 @@ const Profile = () => {
                       <FormItem>
                         <FormLabel>Phone</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Enter your phone number" {...field} />
+                          <Input
+                            type="tel"                 // was "number" — use tel so 03… stays intact
+                            placeholder="03XXXXXXXXX"  // Pakistani mobile format
+                            autoComplete="tel"
+                            inputMode="numeric"
+                            {...field}
+                          />
                         </FormControl>
+
+                        {/* Warning hint */}
+                        <div className="text-xs text-amber-600 mt-1">
+                          ⚠️ Use the number registered with Easypaisa or JazzCash for payouts.
+                        </div>
+
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
+
 
                 <div className='mb-3 md:col-span-2 col-span-1'>
                   <FormField
