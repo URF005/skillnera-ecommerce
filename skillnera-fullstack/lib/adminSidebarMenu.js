@@ -6,7 +6,9 @@ import { LuUserRound } from "react-icons/lu";
 import { IoMdStarOutline } from "react-icons/io";
 import { MdOutlinePermMedia } from "react-icons/md";
 import { RiCoupon2Line, RiShareForwardLine, RiSettings3Line, RiFileUserLine } from "react-icons/ri"; // +++
+import { MdSupportAgent } from "react-icons/md";
 import { ADMIN_KYC_SHOW } from "@/routes/AdminPanelRoute";
+import { ADMIN_SUPPORT_SHOW } from "@/routes/AdminPanelRoute";
 
 import {
     ADMIN_CATEGORY_ADD,
@@ -124,5 +126,11 @@ export const adminAppSidebarMenu = [
         url: ADMIN_KYC_SHOW,   // single page
         icon: RiFileUserLine,
     },
+    {
+        title: "Supports",
+        url: ADMIN_SUPPORT_SHOW,
+        icon: MdSupportAgent,
+    },
+
 
 ]

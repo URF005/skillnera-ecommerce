@@ -55,3 +55,6 @@ export const ADMIN_MLM_TREE = "/admin/mlm/tree";
 //KYC
 
 export const ADMIN_KYC_SHOW = "/admin/kyc";
+//Support
+export const ADMIN_SUPPORT_SHOW = '/admin/support';
+export const ADMIN_SUPPORT_DETAILS = (id) => `/admin/support/${id}`;

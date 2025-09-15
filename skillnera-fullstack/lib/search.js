@@ -1,5 +1,5 @@
 
-import { ADMIN_CATEGORY_ADD, ADMIN_CATEGORY_SHOW, ADMIN_COUPON_ADD, ADMIN_COUPON_SHOW, ADMIN_CUSTOMERS_SHOW, ADMIN_DASHBOARD, ADMIN_MEDIA_SHOW, ADMIN_ORDER_SHOW, ADMIN_PRODUCT_ADD, ADMIN_PRODUCT_SHOW, ADMIN_PRODUCT_VARIANT_SHOW, ADMIN_REVIEW_SHOW } from "@/routes/AdminPanelRoute";
+import {ADMIN_SUPPORT_SHOW, ADMIN_CATEGORY_ADD, ADMIN_CATEGORY_SHOW, ADMIN_COUPON_ADD, ADMIN_COUPON_SHOW, ADMIN_CUSTOMERS_SHOW, ADMIN_DASHBOARD, ADMIN_MEDIA_SHOW, ADMIN_ORDER_SHOW, ADMIN_PRODUCT_ADD, ADMIN_PRODUCT_SHOW, ADMIN_PRODUCT_VARIANT_SHOW, ADMIN_REVIEW_SHOW } from "@/routes/AdminPanelRoute";
 
 const searchData = [
     {
@@ -75,6 +75,13 @@ const searchData = [
         url: ADMIN_MEDIA_SHOW,
         keywords: ["images", "videos"]
     },
+    {
+        label: "Supports",
+        description: "Manage support tickets",
+        url: ADMIN_SUPPORT_SHOW,
+        keywords: ["support", "tickets", "complaints", "helpdesk"],
+    },
+
 
 ];
 
