@@ -15,7 +15,8 @@ const DatatableWrapper = ({
     deleteEndpoint,
     deleteType,
     trashView,
-    createAction
+    createAction,
+    showExport = true,
 }) => {
 
     const { resolvedTheme } = useTheme()
@@ -39,6 +40,7 @@ const DatatableWrapper = ({
                 deleteType={deleteType}
                 trashView={trashView}
                 createAction={createAction}
+                showExport={showExport}
             />
         </ThemeProvider>
     )

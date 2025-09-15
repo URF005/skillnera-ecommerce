@@ -2,6 +2,7 @@
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import UserPanelLayout from '@/components/Application/Website/UserPanelLayout'
 import WebsiteBreadcrumb from '@/components/Application/Website/WebsiteBreadcrumb'
+import KycCard from '@/components/Application/Website/KycCard'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -322,6 +323,9 @@ const Profile = () => {
             </div>
           </div>
         </div>
+        {/* KYC */}
+        <KycCard />
+
       </UserPanelLayout>
     </div>
   )

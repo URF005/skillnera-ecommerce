@@ -52,4 +52,6 @@ export const ADMIN_MLM_COMMISSIONS = "/admin/mlm/commissions";
 export const ADMIN_MLM_SETTINGS = "/admin/mlm/settings";
 
 export const ADMIN_MLM_TREE = "/admin/mlm/tree";
+//KYC
 
+export const ADMIN_KYC_SHOW = "/admin/kyc";

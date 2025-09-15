@@ -5,7 +5,8 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import { LuUserRound } from "react-icons/lu";
 import { IoMdStarOutline } from "react-icons/io";
 import { MdOutlinePermMedia } from "react-icons/md";
-import { RiCoupon2Line, RiShareForwardLine, RiSettings3Line } from "react-icons/ri"; // +++
+import { RiCoupon2Line, RiShareForwardLine, RiSettings3Line, RiFileUserLine } from "react-icons/ri"; // +++
+import { ADMIN_KYC_SHOW } from "@/routes/AdminPanelRoute";
 
 import {
     ADMIN_CATEGORY_ADD,
@@ -117,8 +118,11 @@ export const adminAppSidebarMenu = [
             { title: "Settings", url: ADMIN_MLM_SETTINGS, icon: RiSettings3Line }
         ]
     },
-    { title: "Referral Tree", url: ADMIN_MLM_TREE }
-
-
+    { title: "Referral Tree", url: ADMIN_MLM_TREE },
+    {
+        title: "KYC",
+        url: ADMIN_KYC_SHOW,   // single page
+        icon: RiFileUserLine,
+    },
 
 ]

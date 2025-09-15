@@ -22,7 +22,8 @@ const Datatable = ({
     deleteEndpoint,
     deleteType,
     trashView,
-    createAction
+    createAction,
+    showExport = true,
 }) => {
 
     // filter , sorting and pagination states 
@@ -170,77 +171,93 @@ const Datatable = ({
 
         getRowId: (originalRow) => originalRow._id,
 
-        renderToolbarInternalActions: ({ table }) => (
-            <>
-                {/* built in buttons  */}
-                <MRT_ToggleGlobalFilterButton table={table} />
-                <MRT_ShowHideColumnsButton table={table} />
-                <MRT_ToggleFullScreenButton table={table} />
-                <MRT_ToggleDensePaddingButton table={table} />
+        // inside useMaterialReactTable({ ... })
+        renderToolbarInternalActions: ({ table }) => {
+            const hasTrash = Boolean(trashView);            // ✅ guard for recycle-bin link
+            const hasDelete = Boolean(deleteEndpoint);      // ✅ guard for delete actions
+            const selected = table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
 
-                {deleteType !== 'PD'
-                    &&
-                    <Tooltip title="Recycle Bin" >
-                        <Link href={trashView}>
-                            <IconButton>
-                                <RecyclingIcon />
-                            </IconButton>
-                        </Link>
-                    </Tooltip>
-                }
+            return (
+                <>
+                    {/* built in buttons */}
+                    <MRT_ToggleGlobalFilterButton table={table} />
+                    <MRT_ShowHideColumnsButton table={table} />
+                    <MRT_ToggleFullScreenButton table={table} />
+                    <MRT_ToggleDensePaddingButton table={table} />
 
-
-                {deleteType === 'SD'
-                    &&
-                    <Tooltip title="Delete All" >
-                        <IconButton disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-                            onClick={() => handleDelete(Object.keys(rowSelection), deleteType)}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                }
-
-                {deleteType === 'PD'
-                    &&
-                    <>
-                        <Tooltip title="Restore Data" >
-                            <IconButton disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
-                                onClick={() => handleDelete(Object.keys(rowSelection), 'RSD')}
-                            >
-
-                                <RestoreFromTrashIcon />
-                            </IconButton>
+                    {/* ♻️ Recycle Bin: only render if trashView is provided */}
+                    {hasTrash && deleteType !== 'PD' && (
+                        <Tooltip title="Recycle Bin">
+                            <Link href={trashView}>
+                                <IconButton>
+                                    <RecyclingIcon />
+                                </IconButton>
+                            </Link>
                         </Tooltip>
-                        <Tooltip title="Permanently Delete Data" >
-                            <IconButton disabled={!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()}
+                    )}
+
+                    {/* 🗑️ Soft delete button: only if deleteEndpoint is provided AND we're in SD mode */}
+                    {hasDelete && deleteType === 'SD' && (
+                        <Tooltip title="Delete Selected">
+                            <IconButton
+                                disabled={!selected}
                                 onClick={() => handleDelete(Object.keys(rowSelection), deleteType)}
                             >
-                                <DeleteForeverIcon />
+                                <DeleteIcon />
                             </IconButton>
                         </Tooltip>
-                    </>
-                }
+                    )}
 
-            </>
-        ),
+                    {/* 🧹 Trash view actions: only if deleteEndpoint is provided AND we're in PD mode */}
+                    {hasDelete && deleteType === 'PD' && (
+                        <>
+                            <Tooltip title="Restore Selected">
+                                <IconButton
+                                    disabled={!selected}
+                                    onClick={() => handleDelete(Object.keys(rowSelection), 'RSD')}
+                                >
+                                    <RestoreFromTrashIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Permanently Delete Selected">
+                                <IconButton
+                                    disabled={!selected}
+                                    onClick={() => handleDelete(Object.keys(rowSelection), deleteType)}
+                                >
+                                    <DeleteForeverIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    )}
+                </>
+            );
+        },
+
 
         enableRowActions: true,
         positionActionsColumn: 'last',
         renderRowActionMenuItems: ({ row }) => createAction(row, deleteType, handleDelete),
 
-        renderTopToolbarCustomActions: ({ table }) => (
-            <Tooltip>
-                <ButtonLoading
-                    type="button"
-                    text={<><SaveAltIcon fontSize='25' /> Export</>}
-                    loading={exportLoading}
-                    onClick={() => handleExport(table.getSelectedRowModel().rows)}
-                    className="cursor-pointer"
-                />
-            </Tooltip>
-        )
-
+        renderTopToolbarCustomActions: ({ table }) => {
+            if (!showExport) return null;   // ⬅️ hide on demand
+            const selectedRows = table.getSelectedRowModel().rows;
+            const canExportSelected = selectedRows.length > 0;
+            const canExportAll = Boolean(exportEndpoint);
+            return (
+                <Tooltip title={canExportAll || canExportSelected ? "" : "Select rows to export"}>
+                    <span>
+                        <ButtonLoading
+                            type="button"
+                            text={<><SaveAltIcon fontSize='25' /> Export</>}
+                            loading={exportLoading}
+                            onClick={() => handleExport(selectedRows)}
+                            className="cursor-pointer"
+                            disabled={!canExportAll && !canExportSelected}
+                        />
+                    </span>
+                </Tooltip>
+            );
+        },
     })
 
     return (
