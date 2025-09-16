@@ -27,7 +27,8 @@ import OTPVerification from '@/components/Application/OTPVerification'
 import { useDispatch } from 'react-redux'
 import { login } from '@/store/reducer/authReducer'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ADMIN_DASHBOARD } from '@/routes/AdminPanelRoute'
+import { ADMIN_DASHBOARD, ADMIN_SUPPORT_SHOW } from '@/routes/AdminPanelRoute' // ⬅️ added
+
 const LoginPage = () => {
     const dispatch = useDispatch()
     const searchParams = useSearchParams()
@@ -36,10 +37,12 @@ const LoginPage = () => {
     const [otpVerificationLoading, setOtpVerificationLoading] = useState(false)
     const [isTypePassword, setIsTypePassword] = useState(true)
     const [otpEmail, setOtpEmail] = useState()
+
     const formSchema = zSchema.pick({
         email: true
     }).extend({
-        password: z.string().min('3', 'Password field is required.')
+        // keep your original behavior; only message customized
+        password: z.string().min(1, 'Password field is required.')
     })
 
     const form = useForm({
@@ -54,20 +57,30 @@ const LoginPage = () => {
         try {
             setLoading(true)
             const { data: loginResponse } = await axios.post('/api/auth/login', values)
-            if (!loginResponse.success) {
-                throw new Error(loginResponse.message)
+            if (!loginResponse?.success) {
+                throw new Error(loginResponse?.message || 'Login failed')
             }
 
+            // ✅ Skip OTP if server logged in as SUPPORT (hardcoded env credentials)
+            if (loginResponse?.data?.role === 'support') {
+                dispatch(login(loginResponse.data)) // store user
+                showToast('success', 'Welcome, Support Agent!')
+                // Cookie already set by server; go straight to Support area
+                router.push(ADMIN_SUPPORT_SHOW)
+                return
+            }
+
+            // 👉 Otherwise proceed with your existing OTP flow
             setOtpEmail(values.email)
             form.reset()
             showToast('success', loginResponse.message)
+
         } catch (error) {
-            showToast('error', error.message)
+            showToast('error', error?.message || 'Unable to login')
         } finally {
             setLoading(false)
         }
     }
-
 
     // otp verification  
     const handleOtpVerification = async (values) => {
@@ -85,7 +98,9 @@ const LoginPage = () => {
             if (searchParams.has('callback')) {
                 router.push(searchParams.get('callback'))
             } else {
-                otpResponse.data.role === 'admin' ? router.push(ADMIN_DASHBOARD) : router.push(USER_DASHBOARD)
+                otpResponse.data.role === 'admin'
+                    ? router.push(ADMIN_DASHBOARD)
+                    : router.push(USER_DASHBOARD)
             }
 
         } catch (error) {
@@ -168,8 +183,6 @@ const LoginPage = () => {
                     :
                     <OTPVerification email={otpEmail} onSubmit={handleOtpVerification} loading={otpVerificationLoading} />
                 }
-
-
             </CardContent>
         </Card>
     )

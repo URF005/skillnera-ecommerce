@@ -5,132 +5,94 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import { LuUserRound } from "react-icons/lu";
 import { IoMdStarOutline } from "react-icons/io";
 import { MdOutlinePermMedia } from "react-icons/md";
-import { RiCoupon2Line, RiShareForwardLine, RiSettings3Line, RiFileUserLine } from "react-icons/ri"; // +++
+import { RiCoupon2Line, RiShareForwardLine, RiSettings3Line, RiFileUserLine } from "react-icons/ri";
 import { MdSupportAgent } from "react-icons/md";
-import { ADMIN_KYC_SHOW } from "@/routes/AdminPanelRoute";
-import { ADMIN_SUPPORT_SHOW } from "@/routes/AdminPanelRoute";
 
 import {
-    ADMIN_CATEGORY_ADD,
-    ADMIN_CATEGORY_SHOW,
-    ADMIN_COUPON_ADD,
-    ADMIN_COUPON_SHOW,
-    ADMIN_CUSTOMERS_SHOW,
-    ADMIN_DASHBOARD,
-    ADMIN_MEDIA_SHOW,
-    ADMIN_ORDER_SHOW,
-    ADMIN_PRODUCT_ADD,
-    ADMIN_PRODUCT_SHOW,
-    ADMIN_PRODUCT_VARIANT_ADD,
-    ADMIN_PRODUCT_VARIANT_SHOW,
-    ADMIN_REVIEW_SHOW,
-    ADMIN_MLM_COMMISSIONS,   // +++
-    ADMIN_MLM_SETTINGS,   // +++
-    ADMIN_MLM_TREE
+  ADMIN_CATEGORY_ADD,
+  ADMIN_CATEGORY_SHOW,
+  ADMIN_COUPON_ADD,
+  ADMIN_COUPON_SHOW,
+  ADMIN_CUSTOMERS_SHOW,
+  ADMIN_DASHBOARD,
+  ADMIN_MEDIA_SHOW,
+  ADMIN_ORDER_SHOW,
+  ADMIN_PRODUCT_ADD,
+  ADMIN_PRODUCT_SHOW,
+  ADMIN_PRODUCT_VARIANT_ADD,
+  ADMIN_PRODUCT_VARIANT_SHOW,
+  ADMIN_REVIEW_SHOW,
+  ADMIN_MLM_COMMISSIONS,
+  ADMIN_MLM_SETTINGS,
+  ADMIN_MLM_TREE,
+  ADMIN_KYC_SHOW,
+  ADMIN_SUPPORT_SHOW,
 } from "@/routes/AdminPanelRoute";
 
-
 export const adminAppSidebarMenu = [
-    {
-        title: "Dashboard",
-        url: ADMIN_DASHBOARD,
-        icon: AiOutlineDashboard
-    },
-    {
-        title: "Category",
-        url: "#",
-        icon: BiCategory,
-        submenu: [
-            {
-                title: "Add Category",
-                url: ADMIN_CATEGORY_ADD
-            },
-            {
-                title: "All Category",
-                url: ADMIN_CATEGORY_SHOW
-            }
-        ]
-    },
-    {
-        title: "Products",
-        url: "#",
-        icon: IoShirtOutline,
-        submenu: [
-            {
-                title: "Add Product",
-                url: ADMIN_PRODUCT_ADD
-            },
-            {
-                title: "Add Variant",
-                url: ADMIN_PRODUCT_VARIANT_ADD
-            },
-            {
-                title: "All Products",
-                url: ADMIN_PRODUCT_SHOW
-            },
-            {
-                title: "Product Variants",
-                url: ADMIN_PRODUCT_VARIANT_SHOW
-            },
-        ]
-    },
-    {
-        title: "Coupons",
-        url: "#",
-        icon: RiCoupon2Line,
-        submenu: [
-            {
-                title: "Add Coupon",
-                url: ADMIN_COUPON_ADD
-            },
-            {
-                title: "All Coupons",
-                url: ADMIN_COUPON_SHOW
-            },
+  { title: "Dashboard", url: ADMIN_DASHBOARD, icon: AiOutlineDashboard, roles: ["admin"] },
+  {
+    title: "Category",
+    url: "#",
+    icon: BiCategory,
+    roles: ["admin"],
+    submenu: [
+      { title: "Add Category", url: ADMIN_CATEGORY_ADD, roles: ["admin"] },
+      { title: "All Category", url: ADMIN_CATEGORY_SHOW, roles: ["admin"] },
+    ],
+  },
+  {
+    title: "Products",
+    url: "#",
+    icon: IoShirtOutline,
+    roles: ["admin"],
+    submenu: [
+      { title: "Add Product", url: ADMIN_PRODUCT_ADD, roles: ["admin"] },
+      { title: "Add Variant", url: ADMIN_PRODUCT_VARIANT_ADD, roles: ["admin"] },
+      { title: "All Products", url: ADMIN_PRODUCT_SHOW, roles: ["admin"] },
+      { title: "Product Variants", url: ADMIN_PRODUCT_VARIANT_SHOW, roles: ["admin"] },
+    ],
+  },
+  {
+    title: "Coupons",
+    url: "#",
+    icon: RiCoupon2Line,
+    roles: ["admin"],
+    submenu: [
+      { title: "Add Coupon", url: ADMIN_COUPON_ADD, roles: ["admin"] },
+      { title: "All Coupons", url: ADMIN_COUPON_SHOW, roles: ["admin"] },
+    ],
+  },
+  { title: "Orders", url: ADMIN_ORDER_SHOW, icon: MdOutlineShoppingBag, roles: ["admin"] },
+  { title: "Customers", url: ADMIN_CUSTOMERS_SHOW, icon: LuUserRound, roles: ["admin"] },
+  { title: "Rating & Review", url: ADMIN_REVIEW_SHOW, icon: IoMdStarOutline, roles: ["admin"] },
+  { title: "Media", url: ADMIN_MEDIA_SHOW, icon: MdOutlinePermMedia, roles: ["admin"] },
+  {
+    title: "MLM",
+    url: "#",
+    icon: RiShareForwardLine,
+    roles: ["admin"],
+    submenu: [
+      { title: "Commissions", url: ADMIN_MLM_COMMISSIONS, roles: ["admin"] },
+      { title: "Settings", url: ADMIN_MLM_SETTINGS, roles: ["admin"] },
+    ],
+  },
+  { title: "Referral Tree", url: ADMIN_MLM_TREE, roles: ["admin"] },
+  { title: "KYC", url: ADMIN_KYC_SHOW, icon: RiFileUserLine, roles: ["admin"] },
 
-        ]
-    },
-    {
-        title: "Orders",
-        url: ADMIN_ORDER_SHOW,
-        icon: MdOutlineShoppingBag,
+  // Visible to both admin and support
+  { title: "Supports", url: ADMIN_SUPPORT_SHOW, icon: MdSupportAgent, roles: ["admin", "support"] },
+];
 
-    },
-    {
-        title: "Customers",
-        url: ADMIN_CUSTOMERS_SHOW,
-        icon: LuUserRound,
-    },
-    {
-        title: "Rating & Review",
-        url: ADMIN_REVIEW_SHOW,
-        icon: IoMdStarOutline,
-    },
-    {
-        title: "Media",
-        url: ADMIN_MEDIA_SHOW,
-        icon: MdOutlinePermMedia,
-    },
-    {
-        title: "MLM",
-        url: "#",
-        icon: RiShareForwardLine,
-        submenu: [
-            { title: "Commissions", url: ADMIN_MLM_COMMISSIONS },
-            { title: "Settings", url: ADMIN_MLM_SETTINGS, icon: RiSettings3Line }
-        ]
-    },
-    { title: "Referral Tree", url: ADMIN_MLM_TREE },
-    {
-        title: "KYC",
-        url: ADMIN_KYC_SHOW,   // single page
-        icon: RiFileUserLine,
-    },
-    {
-        title: "Supports",
-        url: ADMIN_SUPPORT_SHOW,
-        icon: MdSupportAgent,
-    },
-
-
-]
+// helper to filter menu by role
+export function getAdminSidebarMenuByRole(role) {
+  if (!role) return adminAppSidebarMenu;
+  return adminAppSidebarMenu
+    .filter((item) => !item.roles || item.roles.includes(role))
+    .map((item) => ({
+      ...item,
+      submenu: item.submenu
+        ? item.submenu.filter((s) => !s.roles || s.roles.includes(role))
+        : undefined,
+    }));
+}

@@ -10,19 +10,34 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import Image from "next/image"
-import logoBlack from '@/public/assets/images/logo-black.png'
-import logoWhite from '@/public/assets/images/logo-white.png'
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/sidebar";
+import Image from "next/image";
+import logoBlack from '@/public/assets/images/logo-black.png';
+import logoWhite from '@/public/assets/images/logo-white.png';
+import { Button } from "@/components/ui/button";
 import { LuChevronRight } from "react-icons/lu";
 import { IoMdClose } from "react-icons/io";
-import { adminAppSidebarMenu } from "@/lib/adminSidebarMenu"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import Link from "next/link"
+import { getAdminSidebarMenuByRole } from "@/lib/adminSidebarMenu";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import Link from "next/link";
+import { useSelector } from "react-redux";
+import { usePathname } from "next/navigation";
 
 const AppSidebar = () => {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar } = useSidebar();
+  const pathname = usePathname();
+  const role = useSelector((s) => s?.auth?.user?.role) || null;
+
+  // Hide the sidebar for support:
+  //  - when role is 'support' (after hydration), OR
+  //  - when URL is under /admin/support (pre-hydration fallback)
+  const isSupportContext =
+    role === 'support' || (pathname && pathname.startsWith('/admin/support'));
+
+  if (isSupportContext) return null;
+
+  const items = getAdminSidebarMenuByRole(role || 'admin');
+
   return (
     <Sidebar className="z-50">
       <SidebarHeader className="border-b h-14 p-0">
@@ -37,8 +52,8 @@ const AppSidebar = () => {
 
       <SidebarContent className="p-3">
         <SidebarMenu>
-          {adminAppSidebarMenu.map((menu, index) => {
-            const Icon = menu?.icon; // may be undefined
+          {items.map((menu, index) => {
+            const Icon = menu?.icon;
             const hasSubmenu = Array.isArray(menu?.submenu) && menu.submenu.length > 0;
 
             return (
@@ -78,7 +93,7 @@ const AppSidebar = () => {
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>
-  )
-}
+  );
+};
 
-export default AppSidebar
+export default AppSidebar;

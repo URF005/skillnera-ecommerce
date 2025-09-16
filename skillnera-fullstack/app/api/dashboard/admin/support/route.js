@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(req) {
   try {
-    const auth = await isAuthenticated("admin");
+    const auth = await isAuthenticated(["admin", "support"]);
     if (!auth.isAuth) return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 403 });
     await connectDB();
 
@@ -25,7 +25,6 @@ export async function GET(req) {
     if (deleteType === "SD") match.deletedAt = null;
     else if (deleteType === "PD") match.deletedAt = { $ne: null };
 
-    // view filters
     if (view === "resolved") match.status = "resolved";
     else if (view === "in_process") match.status = { $in: ["open", "in_process"] };
     else if (view === "my") match.assignedTo = auth.userId;
@@ -33,7 +32,6 @@ export async function GET(req) {
     if (category) match.category = category;
     if (priority) match.priority = priority;
 
-    // sorting
     const sortQ = {};
     for (const s of sorting) sortQ[s.id] = s.desc ? -1 : 1;
     const finalSort = Object.keys(sortQ).length ? sortQ : { createdAt: -1 };
@@ -103,7 +101,7 @@ export async function GET(req) {
         assigneeId: "$assigneeDoc._id",
         assigneeName: "$assigneeDoc.name",
         relatedOrderId: 1,
-        relatedKycId: 1,
+        relatedKycId: 1, // harmless if unused
       },
     };
 

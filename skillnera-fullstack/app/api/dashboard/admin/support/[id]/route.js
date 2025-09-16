@@ -22,18 +22,16 @@ const AttachmentZ = z.object({
 });
 
 const UpdateZ = z.object({
-  assignTo: z.string().length(24).optional(),
+  assignTo: z.string().optional(), // allow "me" or ObjectId
   status: z.enum(SUPPORT_STATUSES).optional(),
   priority: z.enum(SUPPORT_PRIORITIES).optional(),
   category: z.enum(SUPPORT_CATEGORIES).optional(),
   relatedOrderId: z.string().optional(),
-  // add note (internal or member-visible)
   addNote: z.object({
     message: z.string().min(1),
     internal: z.boolean().default(true),
     attachments: z.array(AttachmentZ).optional(),
   }).optional(),
-  // resolution when resolving
   resolution: z.object({
     outcome: z.enum(SUPPORT_OUTCOMES),
     details: z.string().optional(),
@@ -45,7 +43,7 @@ const UpdateZ = z.object({
 
 export async function GET(_req, { params }) {
   try {
-    const auth = await isAuthenticated("admin");
+    const auth = await isAuthenticated(["admin", "support"]);
     if (!auth.isAuth) return response(false, 403, "Unauthorized.");
     await connectDB();
 
@@ -66,7 +64,7 @@ export async function GET(_req, { params }) {
 
 export async function PUT(req, { params }) {
   try {
-    const auth = await isAuthenticated("admin");
+    const auth = await isAuthenticated(["admin", "support"]);
     if (!auth.isAuth) return response(false, 403, "Unauthorized.");
     await connectDB();
 
@@ -81,13 +79,6 @@ export async function PUT(req, { params }) {
     const updates = {};
     const auditEntries = [];
 
-    if (data.assignTo) {
-      updates.assignedTo = new mongoose.Types.ObjectId(data.assignTo);
-      // auto move to in_process if currently open
-      updates.status = "in_process";
-      auditEntries.push({ by: auth.userId, action: "assigned", meta: { to: data.assignTo } });
-    }
-
     if (data.priority) {
       updates.priority = data.priority;
       auditEntries.push({ by: auth.userId, action: "priority_change", meta: { priority: data.priority } });
@@ -95,7 +86,7 @@ export async function PUT(req, { params }) {
 
     if (data.category) {
       updates.category = data.category;
-      updates.dueAt = computeDueAt(data.category); // recompute SLA due
+      updates.dueAt = computeDueAt(data.category);
       auditEntries.push({ by: auth.userId, action: "category_change", meta: { category: data.category } });
     }
 
@@ -103,7 +94,6 @@ export async function PUT(req, { params }) {
       updates.relatedOrderId = data.relatedOrderId || null;
       auditEntries.push({ by: auth.userId, action: "link_order", meta: { order_id: data.relatedOrderId } });
     }
-
 
     if (data.addNote) {
       const note = {
@@ -130,7 +120,6 @@ export async function PUT(req, { params }) {
     }
 
     if (data.resolution && (data.status === "resolved" || !data.status)) {
-      // set resolution + resolve
       updates.status = "resolved";
       updates["resolution.outcome"] = data.resolution.outcome;
       if (data.resolution.details) updates["resolution.details"] = data.resolution.details;
@@ -141,22 +130,21 @@ export async function PUT(req, { params }) {
       updates["resolution.resolvedAt"] = new Date();
       auditEntries.push({ by: auth.userId, action: "resolved", meta: { outcome: data.resolution.outcome } });
     }
+
+    // Assignment (accept "me" or ObjectId)
     if (data.assignTo) {
-      // allow special "me"
       const assigneeId = data.assignTo === "me" ? auth.userId : data.assignTo;
       updates.assignedTo = new mongoose.Types.ObjectId(assigneeId);
-      // auto move to in_process if currently open
       updates.status = "in_process";
       auditEntries.push({ by: auth.userId, action: "assigned", meta: { to: assigneeId } });
     }
-
 
     if (Object.keys(updates).length > 0 || auditEntries.length > 0) {
       await SupportTicket.updateOne(
         { _id: id, deletedAt: null },
         {
           $set: updates,
-          $push: { audit: { $each: auditEntries.map(a => ({ ...a, at: new Date() })) } },
+          $push: { audit: { $each: auditEntries.map((a) => ({ ...a, at: new Date() })) } },
         }
       );
     }

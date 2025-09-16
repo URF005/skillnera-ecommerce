@@ -1,71 +1,80 @@
 import { NextResponse } from "next/server";
 import { USER_DASHBOARD, WEBSITE_LOGIN } from "./routes/WebsiteRoute";
 import { jwtVerify } from "jose";
-import { ADMIN_DASHBOARD } from "./routes/AdminPanelRoute";
+import {
+  ADMIN_DASHBOARD,
+  ADMIN_SUPPORT_SHOW, // make sure this exports "/admin/support"
+} from "./routes/AdminPanelRoute";
 
 export async function middleware(request) {
   const url = request.nextUrl;
   const pathname = url.pathname;
 
-  // ---- 1) Capture ?ref=CODE on any public page ----
+  // capture ?ref= on public pages
   const ref = url.searchParams.get("ref");
-  // Always create a response so we can attach cookies if needed
   const response = NextResponse.next();
-
   if (ref) {
     response.cookies.set("ref_code", ref, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 30, // 30 days
+      maxAge: 60 * 60 * 24 * 30,
     });
   }
 
-  // ---- 2) Route guards (only for protected paths) ----
   const isAuthRoute = pathname.startsWith("/auth");
   const isAdminRoute = pathname.startsWith("/admin");
   const isUserRoute = pathname.startsWith("/my-account");
-
   const hasToken = request.cookies.has("access_token");
 
   try {
-    // If no token:
     if (!hasToken) {
       // protect admin & user areas only
       if (isAdminRoute || isUserRoute) {
         return NextResponse.redirect(new URL(WEBSITE_LOGIN, url));
       }
-      // allow access to /auth and all public routes
+      // allow /auth and all public routes
       return response;
     }
 
-    // Has token: verify it
+    // has token → verify
     const access_token = request.cookies.get("access_token").value;
     const { payload } = await jwtVerify(
       access_token,
       new TextEncoder().encode(process.env.SECRET_KEY)
     );
-
     const role = payload.role;
 
-    // Block logged-in users from hitting /auth/*
+    // 🚩 IMPORTANT: decide where logged-in users go when they hit /auth/*
     if (isAuthRoute) {
-      return NextResponse.redirect(
-        new URL(role === "admin" ? ADMIN_DASHBOARD : USER_DASHBOARD, url)
-      );
+      if (role === "admin") {
+        return NextResponse.redirect(new URL(ADMIN_DASHBOARD, url));
+      }
+      if (role === "support") {
+        return NextResponse.redirect(new URL(ADMIN_SUPPORT_SHOW || "/admin/support", url));
+      }
+      // default: normal users
+      return NextResponse.redirect(new URL(USER_DASHBOARD, url));
     }
 
-    // Protect /admin for admins only
-    if (isAdminRoute && role !== "admin") {
-      return NextResponse.redirect(new URL(WEBSITE_LOGIN, url));
+    // Admin guard (support can ONLY access /admin/support/**)
+    if (isAdminRoute) {
+      if (role === "admin") {
+        // full access
+      } else if (role === "support") {
+        if (!pathname.startsWith(ADMIN_SUPPORT_SHOW || "/admin/support")) {
+          return NextResponse.redirect(new URL(ADMIN_SUPPORT_SHOW || "/admin/support", url));
+        }
+      } else {
+        return NextResponse.redirect(new URL(WEBSITE_LOGIN, url));
+      }
     }
 
-    // Protect /my-account for regular users only
+    // User area guard
     if (isUserRoute && role !== "user") {
       return NextResponse.redirect(new URL(WEBSITE_LOGIN, url));
     }
 
-    // Otherwise allow
     return response;
   } catch (error) {
     console.log(error);
@@ -73,10 +82,7 @@ export async function middleware(request) {
   }
 }
 
-// IMPORTANT: run middleware on ALL non-static, non-API routes
-// so referral capture works on public pages (home, product, etc.)
+// run on all non-static, non-API routes (so referral capture works)
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
 };
