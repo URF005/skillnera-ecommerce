@@ -1,27 +1,27 @@
-import nodemailer from 'nodemailer'
+import nodemailer from 'nodemailer';
+
 export const sendMail = async (subject, receiver, body) => {
-    const trasporter = nodemailer.createTransport({
-        host: process.env.NODEMAILER_HOST,
-        port: process.env.NODEMAILER_PORT,
-        secure: false,
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,               // Updated host
+        port: process.env.SMTP_PORT,               // Updated port (465)
+        secure: process.env.SMTP_SECURE === 'true', // Use 'true' for SSL (465)
         auth: {
-            user: process.env.NODEMAILER_EMAIL,
-            pass: process.env.NODEMAILER_PASSWORD,
+            user: process.env.SMTP_USER,           // Updated email user
+            pass: process.env.SMTP_PASS,           // Updated email password
         }
-    })
+    });
 
     const options = {
-        from: `"Ahsan Ayub" <${process.env.NODEMAILER_EMAIL}>`,
-        to: receiver,
+        from: `"${process.env.FROM_NAME}" <${process.env.SMTP_USER}>`, // Updated sender info
+        to: receiver || process.env.CONTACT_TO,    // Default to CONTACT_TO if no receiver is provided
         subject: subject,
         html: body
-    }
+    };
 
     try {
-        await trasporter.sendMail(options)
-        return { success: true }
+        await transporter.sendMail(options);
+        return { success: true };
     } catch (error) {
-        return { success: false, message: error.message }
+        return { success: false, message: error.message };
     }
-
-}
+};
