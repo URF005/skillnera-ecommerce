@@ -24,7 +24,9 @@ export async function POST(req, { params }) {
     if (!auth.isAuth) return response(false, 401, "Unauthorized.");
     await connectDB();
 
-    const id = params.id;
+    // Await params to correctly access the id
+    const { id } = await params; // Awaiting params
+
     if (!mongoose.Types.ObjectId.isValid(id)) return response(false, 400, "Invalid id.");
 
     const parsed = BodyZ.safeParse(await req.json());

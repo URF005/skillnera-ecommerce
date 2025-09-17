@@ -41,13 +41,14 @@ const UpdateZ = z.object({
   }).optional(),
 });
 
-export async function GET(_req, { params }) {
+export async function GET(req, context) {
   try {
     const auth = await isAuthenticated(["admin", "support"]);
     if (!auth.isAuth) return response(false, 403, "Unauthorized.");
     await connectDB();
 
-    const id = params.id;
+    // Access id from context.params, ensuring it's awaited
+    const { id } = await context.params;  // Await params for id
     if (!mongoose.Types.ObjectId.isValid(id)) return response(false, 400, "Invalid id.");
 
     const t = await SupportTicket.findById(id)
@@ -62,13 +63,14 @@ export async function GET(_req, { params }) {
   }
 }
 
-export async function PUT(req, { params }) {
+export async function PUT(req, context) {
   try {
     const auth = await isAuthenticated(["admin", "support"]);
     if (!auth.isAuth) return response(false, 403, "Unauthorized.");
     await connectDB();
 
-    const id = params.id;
+    // Access id from context.params, ensuring it's awaited
+    const { id } = await context.params;  // Await params for id
     if (!mongoose.Types.ObjectId.isValid(id)) return response(false, 400, "Invalid id.");
 
     const body = await req.json();

@@ -80,60 +80,60 @@ export default function TicketDetails() {
     }
   };
 
-  if (load) return <div className="p-6">Loading…</div>;
-  if (!t) return <div className="p-6">Not found.</div>;
+  if (load) return <div className="p-4 sm:p-6">Loading…</div>;
+  if (!t) return <div className="p-4 sm:p-6">Not found.</div>;
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <WebsiteBreadcrumb props={breadCrumbData} />
       <UserPanelLayout>
         <div className="space-y-6">
-          <div className="border rounded p-4">
-            <div className="flex flex-wrap gap-4 justify-between">
+          <div className="border rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div>
-                <div className="text-sm opacity-70">Ticket</div>
-                <div className="font-semibold">{t.ticketNumber}</div>
+                <div className="text-xs sm:text-sm opacity-70">Ticket</div>
+                <div className="font-semibold text-sm sm:text-base">{t.ticketNumber}</div>
               </div>
               <div>
-                <div className="text-sm opacity-70">Status</div>
-                <div className="font-semibold">{t.status}</div>
+                <div className="text-xs sm:text-sm opacity-70">Status</div>
+                <div className="font-semibold text-sm sm:text-base">{t.status}</div>
               </div>
               <div>
-                <div className="text-sm opacity-70">Category</div>
-                <div className="font-semibold">{t.category}</div>
+                <div className="text-xs sm:text-sm opacity-70">Category</div>
+                <div className="font-semibold text-sm sm:text-base">{t.category}</div>
               </div>
               <div>
-                <div className="text-sm opacity-70">Priority</div>
-                <div className="font-semibold">{t.priority}</div>
+                <div className="text-xs sm:text-sm opacity-70">Priority</div>
+                <div className="font-semibold text-sm sm:text-base">{t.priority}</div>
               </div>
               <div>
-                <div className="text-sm opacity-70">Created</div>
-                <div className="font-semibold">{new Date(t.createdAt).toLocaleString()}</div>
+                <div className="text-xs sm:text-sm opacity-70">Created</div>
+                <div className="font-semibold text-sm sm:text-base">{new Date(t.createdAt).toLocaleString()}</div>
               </div>
               <div>
-                <div className="text-sm opacity-70">Due</div>
-                <div className={`font-semibold ${new Date(t.dueAt) < new Date() ? "text-rose-600" : ""}`}>
+                <div className="text-xs sm:text-sm opacity-70">Due</div>
+                <div className={`font-semibold text-sm sm:text-base ${new Date(t.dueAt) < new Date() ? "text-rose-600" : ""}`}>
                   {new Date(t.dueAt).toLocaleString()}
                 </div>
               </div>
             </div>
 
-            <div className="mt-4">
-              <div className="text-sm opacity-70">Subject</div>
-              <div className="font-medium">{t.subject}</div>
+            <div className="mt-4 sm:mt-6">
+              <div className="text-xs sm:text-sm opacity-70">Subject</div>
+              <div className="font-medium text-sm sm:text-base">{t.subject}</div>
             </div>
 
-            <div className="mt-3">
-              <div className="text-sm opacity-70">Description</div>
-              <div className="whitespace-pre-wrap text-sm">{t.description}</div>
+            <div className="mt-3 sm:mt-4">
+              <div className="text-xs sm:text-sm opacity-70">Description</div>
+              <div className="whitespace-pre-wrap text-sm sm:text-base">{t.description}</div>
             </div>
 
             {Array.isArray(t.attachments) && t.attachments.length > 0 && (
-              <div className="mt-3">
-                <div className="text-sm opacity-70">Attachments</div>
-                <div className="flex flex-wrap gap-3 text-sm">
+              <div className="mt-3 sm:mt-4">
+                <div className="text-xs sm:text-sm opacity-70">Attachments</div>
+                <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm">
                   {t.attachments.map((a, i) => (
-                    <a key={i} href={a.url} target="_blank" className="underline text-blue-600">
+                    <a key={i} href={a.url} target="_blank" className="underline text-blue-600 hover:text-blue-800">
                       {a.name || a.type || "file"}
                     </a>
                   ))}
@@ -143,20 +143,20 @@ export default function TicketDetails() {
           </div>
 
           {/* Conversation (member-visible notes only) */}
-          <div className="border rounded p-4">
-            <div className="font-semibold mb-3">Conversation</div>
+          <div className="border rounded-lg p-4 sm:p-6 bg-white shadow-sm">
+            <div className="font-semibold text-base sm:text-lg mb-3 sm:mb-4">Conversation</div>
             {(!t.notes || t.notes.length === 0) ? (
-              <div className="text-sm opacity-70">No messages yet.</div>
+              <div className="text-xs sm:text-sm opacity-70">No messages yet.</div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[50vh] sm:max-h-[60vh] overflow-y-auto">
                 {t.notes.map((n, idx) => (
-                  <div key={idx} className="border rounded p-3">
-                    <div className="text-xs opacity-70 mb-1">{new Date(n.createdAt).toLocaleString()}</div>
-                    <div className="text-sm whitespace-pre-wrap">{n.message}</div>
+                  <div key={idx} className="border rounded p-3 sm:p-4">
+                    <div className="text-xs opacity-70 mb-1 sm:mb-2">{new Date(n.createdAt).toLocaleString()}</div>
+                    <div className="text-xs sm:text-sm whitespace-pre-wrap">{n.message}</div>
                     {Array.isArray(n.attachments) && n.attachments.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-3 text-xs">
+                      <div className="mt-2 flex flex-wrap gap-2 sm:gap-3 text-xs">
                         {n.attachments.map((a, i) => (
-                          <a key={i} href={a.url} target="_blank" className="underline text-blue-600">
+                          <a key={i} href={a.url} target="_blank" className="underline text-blue-600 hover:text-blue-800">
                             {a.name || a.type || "file"}
                           </a>
                         ))}
@@ -168,20 +168,36 @@ export default function TicketDetails() {
             )}
 
             {/* Reply box */}
-            <div className="mt-4 grid md:grid-cols-6 gap-3 items-start">
-              <div className="md:col-span-5">
-                <Textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Write your reply…" />
-                <div className="mt-2">
-                  <input type="file" multiple onChange={e => setFiles(Array.from(e.target.files || []))} accept="image/*,.pdf" />
+            <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-6 gap-3 sm:gap-4 items-start">
+              <div className="sm:col-span-5">
+                <Textarea
+                  value={message}
+                  onChange={e => setMessage(e.target.value)}
+                  placeholder="Write your reply…"
+                  className="text-xs sm:text-sm min-h-[100px] sm:min-h-[120px]"
+                />
+                <div className="mt-2 sm:mt-3">
+                  <Input
+                    type="file"
+                    multiple
+                    onChange={onFileSelect}
+                    accept="image/*,.pdf"
+                    className="text-xs sm:text-sm"
+                  />
                   {files.length > 0 && (
-                    <ul className="text-xs mt-2 list-disc pl-5">
+                    <ul className="text-xs mt-2 sm:mt-3 list-disc pl-5">
                       {files.map((f, i) => <li key={i}>{f.name}</li>)}
                     </ul>
                   )}
                 </div>
               </div>
-              <div className="md:col-span-1">
-                <Button type="button" onClick={sendReply} disabled={posting} className="w-full">
+              <div className="sm:col-span-1">
+                <Button
+                  type="button"
+                  onClick={sendReply}
+                  disabled={posting}
+                  className="w-full text-xs sm:text-sm py-2 sm:py-2.5"
+                >
                   {posting ? "Sending…" : "Send"}
                 </Button>
               </div>

@@ -83,47 +83,89 @@ export default function NewTicket() {
   };
 
   return (
-    <div>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
       <WebsiteBreadcrumb props={breadCrumbData} />
       <UserPanelLayout>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-6 bg-white shadow-sm rounded-lg p-4 sm:p-6 lg:p-6">
           <div>
-            <label className="text-xs text-slate-500">Subject</label>
-            <Input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Brief summary" />
+            <label className="block text-xs sm:text-sm text-slate-500 mb-1 sm:mb-2">Subject</label>
+            <Input
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              placeholder="Brief summary"
+              className="text-xs sm:text-sm"
+            />
           </div>
           <div>
-            <label className="text-xs text-slate-500">Category</label>
-            <select className="w-full border rounded px-3 py-2" value={category} onChange={e => setCategory(e.target.value)}>
-              {SUPPORT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            <label className="block text-xs sm:text-sm text-slate-500 mb-1 sm:mb-2">Category</label>
+            <select
+              className="w-full border rounded px-3 py-2 text-xs sm:text-sm"
+              value={category}
+              onChange={e => setCategory(e.target.value)}
+            >
+              {SUPPORT_CATEGORIES.map(c => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
             </select>
           </div>
           <div>
-            <label className="text-xs text-slate-500">Priority</label>
-            <select className="w-full border rounded px-3 py-2" value={priority} onChange={e => setPriority(e.target.value)}>
-              {SUPPORT_PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
+            <label className="block text-xs sm:text-sm text-slate-500 mb-1 sm:mb-2">Priority</label>
+            <select
+              className="w-full border rounded px-3 py-2 text-xs sm:text-sm"
+              value={priority}
+              onChange={e => setPriority(e.target.value)}
+            >
+              {SUPPORT_PRIORITIES.map(p => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
             </select>
           </div>
           <div>
-            <label className="text-xs text-slate-500">Related Order ID (optional)</label>
-            <Input value={relatedOrderId} onChange={e => setRelatedOrderId(e.target.value)} placeholder="Order.order_id" />
+            <label className="block text-xs sm:text-sm text-slate-500 mb-1 sm:mb-2">Related Order ID (optional)</label>
+            <Input
+              value={relatedOrderId}
+              onChange={e => setRelatedOrderId(e.target.value)}
+              placeholder="Order.order_id"
+              className="text-xs sm:text-sm"
+            />
           </div>
-          <div className="md:col-span-2">
-            <label className="text-xs text-slate-500">Description</label>
-            <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe your issue…" />
+          <div className="sm:col-span-2">
+            <label className="block text-xs sm:text-sm text-slate-500 mb-1 sm:mb-2">Description</label>
+            <Textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Describe your issue…"
+              className="min-h-[120px] sm:min-h-[150px] text-xs sm:text-sm"
+            />
           </div>
-
-          <div className="md:col-span-2">
-            <label className="text-xs text-slate-500">Attachments (images/PDFs)</label>
-            <input type="file" multiple onChange={onFileSelect} className="block mt-1" accept="image/*,.pdf" />
+          <div className="sm:col-span-2">
+            <label className="block text-xs sm:text-sm text-slate-500 mb-1 sm:mb-2">Attachments (images/PDFs)</label>
+            <Input
+              type="file"
+              multiple
+              onChange={onFileSelect}
+              accept="image/*,.pdf"
+              className="block mt-1 text-xs sm:text-sm"
+            />
             {files.length > 0 && (
-              <ul className="text-xs mt-2 list-disc pl-5">
-                {files.map((f, i) => <li key={i}>{f.name}</li>)}
+              <ul className="text-xs sm:text-sm mt-2 sm:mt-3 list-disc pl-5">
+                {files.map((f, i) => (
+                  <li key={i}>{f.name}</li>
+                ))}
               </ul>
             )}
           </div>
-
-          <div className="md:col-span-2">
-            <Button type="button" onClick={submit} disabled={submitting} className="min-w-[140px]">
+          <div className="sm:col-span-2">
+            <Button
+              type="button"
+              onClick={submit}
+              disabled={submitting}
+              className="w-full sm:w-auto min-w-[140px] text-xs sm:text-sm py-2 sm:py-2.5"
+            >
               {submitting ? "Submitting…" : "Submit Ticket"}
             </Button>
           </div>

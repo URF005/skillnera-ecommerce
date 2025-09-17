@@ -13,9 +13,7 @@ export async function GET(req, ctx) {
     await connectDB();
 
     // Safely read id from context OR fallback from URL as last segment
-    const id =
-      ctx?.params?.id ||
-      req?.nextUrl?.pathname?.split("/")?.filter(Boolean)?.pop();
+    const { id } = await ctx.params;  // Await context.params
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return response(false, 400, "Invalid id.");

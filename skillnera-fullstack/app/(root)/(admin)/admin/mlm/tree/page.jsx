@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 
-// small chip
+// Small chip component
 function Chip({ children, className = "" }) {
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs bg-slate-100 text-slate-700 ${className}`}>
+    <span className={`px-2 py-0.5 rounded-full text-xs sm:text-sm bg-slate-100 text-slate-700 ${className}`}>
       {children}
     </span>
   );
@@ -17,10 +17,10 @@ function fmt(n) {
 // Compact node box
 function NodeBox({ node }) {
   return (
-    <div className="rounded-xl border bg-white shadow-sm px-3 py-2 min-w-[190px] max-w-[220px]">
-      <div className="text-sm font-medium truncate">{node.name || "(No name)"}</div>
-      <div className="text-[11px] text-slate-600 truncate">{node.email}</div>
-      <div className="text-[11px] text-slate-500">Code: {node.referralCode || "-"}</div>
+    <div className="rounded-xl border bg-white shadow-sm px-3 py-2 min-w-[160px] sm:min-w-[190px] max-w-[200px] sm:max-w-[220px]">
+      <div className="text-xs sm:text-sm font-medium truncate">{node.name || "(No name)"}</div>
+      <div className="text-[10px] sm:text-[11px] text-slate-600 truncate">{node.email}</div>
+      <div className="text-[10px] sm:text-[11px] text-slate-500">Code: {node.referralCode || "-"}</div>
       <div className="mt-2 flex items-center gap-2 flex-wrap">
         <Chip>Direct: {node.childrenCount || 0}</Chip>
         <Chip className={node.mlmActive ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}>
@@ -48,47 +48,47 @@ function BinaryNode({ node, level = 0, maxDepth = 3 }) {
 
   return (
     <div className="inline-block text-center align-top">
-      {/* node */}
+      {/* Node */}
       <div className="flex justify-center">
         <NodeBox node={node} />
       </div>
 
-      {/* connectors + children */}
+      {/* Connectors + children */}
       {(left || right) && level < maxDepth && (
-        <div className="mt-2">
-          {/* vertical line down from parent */}
-          <div className="w-px h-4 bg-slate-300 mx-auto" />
-          {/* horizontal connector */}
-          <div className="mx-8 border-t border-slate-300" />
-          {/* children row */}
-          <div className="grid grid-cols-2 gap-x-16 mt-0">
+        <div className="mt-2 sm:mt-3">
+          {/* Vertical line down from parent */}
+          <div className="w-px h-3 sm:h-4 bg-slate-300 mx-auto" />
+          {/* Horizontal connector */}
+          <div className="mx-4 sm:mx-8 border-t border-slate-300" />
+          {/* Children row */}
+          <div className="grid grid-cols-2 gap-x-8 sm:gap-x-16 mt-0">
             {/* LEFT */}
             <div className="flex flex-col items-center">
               {left ? (
                 <>
-                  <div className="w-px h-4 bg-slate-300" />
+                  <div className="w-px h-3 sm:h-4 bg-slate-300" />
                   <BinaryNode node={left} level={level + 1} maxDepth={maxDepth} />
                 </>
               ) : (
-                <div className="h-4" />
+                <div className="h-3 sm:h-4" />
               )}
             </div>
             {/* RIGHT */}
             <div className="flex flex-col items-center">
               {right ? (
                 <>
-                  <div className="w-px h-4 bg-slate-300" />
+                  <div className="w-px h-3 sm:h-4 bg-slate-300" />
                   <BinaryNode node={right} level={level + 1} maxDepth={maxDepth} />
                 </>
               ) : (
-                <div className="h-4" />
+                <div className="h-3 sm:h-4" />
               )}
             </div>
           </div>
 
-          {/* show overflow count if more than 2 kids */}
+          {/* Show overflow count if more than 2 kids */}
           {children.length > 2 && (
-            <div className="mt-2 text-[11px] text-slate-500">
+            <div className="mt-2 text-[10px] sm:text-[11px] text-slate-500">
               +{children.length - 2} more (increase per-level limit if needed)
             </div>
           )}
@@ -111,7 +111,7 @@ export default function ReferralTreePage() {
     }
     setLoading(true);
     try {
-      // keep it binary: per=2
+      // Keep it binary: per=2
       const params = new URLSearchParams({
         root: query.trim(),
         depth: String(depth),
@@ -135,23 +135,23 @@ export default function ReferralTreePage() {
   }
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full overflow-x-hidden space-y-4 sm:space-y-6">
       {/* Controls */}
-      <div className="flex items-end gap-3 flex-wrap">
-        <div>
-          <label className="text-sm text-slate-600">Find root (email / referral code / user id)</label>
+      <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 flex-wrap">
+        <div className="w-full sm:w-auto">
+          <label className="text-xs sm:text-sm text-slate-600 block mb-1">Find root (email / referral code / user id)</label>
           <input
-            className="border rounded px-3 py-2 w-80"
+            className="border rounded px-3 py-2 w-full sm:w-80 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="e.g. alice@example.com or TNABC123"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKey}
           />
         </div>
-        <div>
-          <label className="text-sm text-slate-600">Depth</label>
+        <div className="w-full sm:w-auto">
+          <label className="text-xs sm:text-sm text-slate-600 block mb-1">Depth</label>
           <select
-            className="border rounded px-2 py-2 ml-2"
+            className="border rounded px-3 py-2 text-sm sm:text-base w-full sm:w-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={depth}
             onChange={(e) => setDepth(Number(e.target.value))}
           >
@@ -160,17 +160,21 @@ export default function ReferralTreePage() {
             ))}
           </select>
         </div>
-        <button className="border rounded px-4 py-2" onClick={load} disabled={loading}>
+        <button
+          className="border rounded px-4 py-2 text-sm sm:text-base bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400 w-full sm:w-auto"
+          onClick={load}
+          disabled={loading}
+        >
           {loading ? "Loading…" : "View Binary Tree"}
         </button>
       </div>
 
       {/* Content */}
-      {!data && <div className="text-slate-500">Enter a user and click “View Binary Tree”.</div>}
-      {data?.error && <div className="text-rose-600">Error: {data.error}</div>}
+      {!data && <div className="text-slate-500 text-sm sm:text-base">Enter a user and click “View Binary Tree”.</div>}
+      {data?.error && <div className="text-rose-600 text-sm sm:text-base">Error: {data.error}</div>}
       {data?.tree && (
-        <div className="mt-4 overflow-x-auto">
-          <div className="inline-block">
+        <div className="mt-4 sm:mt-6 overflow-x-auto">
+          <div className="inline-block min-w-[300px]">
             <BinaryNode node={data.tree} maxDepth={data.meta?.depth ?? depth} />
           </div>
         </div>
