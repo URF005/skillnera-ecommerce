@@ -1,5 +1,5 @@
 export const orderNotification = (data) => {
-    const html = `
+	const html = `
         <!DOCTYPE html>
   <html lang="en-US" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml">
 <head>
@@ -210,7 +210,7 @@ export const orderNotification = (data) => {
 																style="width:100%;padding-right:0px;padding-left:0px;">
 																<div align="center" class="alignment">
 																	<div style="max-width: 248px;"><img alt="Logo"
-																			height="auto" src="https://res.cloudinary.com/dg7efdu9o/image/upload/v1747200653/logo-black_luvjrd.webp"
+																			height="auto" src="https://res.cloudinary.com/dwf3l5kjp/image/upload/v1758091724/huhvofdwprtvnrd9qz7j.png"
 																			style="display: block; height: auto; border: 0; width: 100%;"
 																			title="Logo" width="248" /></div>
 																</div>
@@ -285,7 +285,7 @@ export const orderNotification = (data) => {
 																style="width:100%;padding-right:0px;padding-left:0px;">
 																<div align="center" class="alignment">
 																	<div style="max-width: 13px;"><img alt="Check"
-																			height="auto" src="https://res.cloudinary.com/dg7efdu9o/image/upload/v1747200654/check-orange_l0qnlt.webp"
+																			height="auto" src="https://res.cloudinary.com/dwf3l5kjp/image/upload/v1758091775/d6mxgiaekkcxao3ymsmg.png"
 																			style="display: block; height: auto; border: 0; width: 100%;"
 																			title="Check" width="13" /></div>
 																</div>
@@ -426,7 +426,7 @@ export const orderNotification = (data) => {
 																<div align="center" class="alignment">
 																	<div style="max-width: 130px;"><img
 																			alt="a hand with a star" height="auto"
-																			src="https://res.cloudinary.com/dg7efdu9o/image/upload/v1747200653/order-conf-icon_d8youi.webp"
+																			src="https://res.cloudinary.com/dwf3l5kjp/image/upload/v1758091840/fjfidfahz1fmyi2lzeit.png"
 																			style="display: block; height: auto; border: 0; width: 100%;"
 																			title="a hand with a star" width="130" />
 																	</div>
@@ -525,7 +525,7 @@ export const orderNotification = (data) => {
 																					href="https://www.facebook.com/"
 																					target="_blank"><img alt="facebook"
 																						height="auto"
-																						src="https://res.cloudinary.com/dg7efdu9o/image/upload/v1747200654/facebook2x_cph6xp.webp"
+																						src="https://res.cloudinary.com/dwf3l5kjp/image/upload/v1758091898/dampozabhp2ms8med0wc.png"
 																						style="display: block; height: auto; border: 0;"
 																						title="facebook"
 																						width="32" /></a></td>
@@ -533,7 +533,7 @@ export const orderNotification = (data) => {
 																					href="https://www.twitter.com/"
 																					target="_blank"><img alt="twitter"
 																						height="auto"
-																						src="https://res.cloudinary.com/dg7efdu9o/image/upload/v1747200654/twitter2x_ztsdk9.webp"
+																						src="https://res.cloudinary.com/dwf3l5kjp/image/upload/v1758091899/drx2v1ujhqtzwaatp05m.png"
 																						style="display: block; height: auto; border: 0;"
 																						title="twitter"
 																						width="32" /></a></td>
@@ -541,7 +541,7 @@ export const orderNotification = (data) => {
 																					href="https://www.instagram.com/"
 																					target="_blank"><img alt="instagram"
 																						height="auto"
-																						src="https://res.cloudinary.com/dg7efdu9o/image/upload/v1747200655/instagram2x_fbwltb.webp"
+																						src="https://res.cloudinary.com/dwf3l5kjp/image/upload/v1758091899/zarqszc7fhsv9k3pbw0d.png"
 																						style="display: block; height: auto; border: 0;"
 																						title="instagram"
 																						width="32" /></a></td>
@@ -756,5 +756,5 @@ export const orderNotification = (data) => {
 </html>
 `;
 
-    return html;
+	return html;
 };
