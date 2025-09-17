@@ -72,12 +72,12 @@ export async function POST(request) {
                 orderDetailsUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/order-details/${newOrder.order_id}`
             };
 
-            await sendMail('Order placed successfully.', validatedData.email, orderNotification(mailData));
+            await sendMail('Order placed successfully! Please check your email inbox, spam, and trash folders for confirmation..', validatedData.email, orderNotification(mailData));
         } catch (error) {
             console.log('Email error:', error);
         }
 
-        return response(true, 200, 'Order placed successfully.', { order_id: newOrder.order_id });
+        return response(true, 200, 'Order placed successfully! Please check your email inbox, spam, and trash folders for confirmation..', { order_id: newOrder.order_id });
 
     } catch (error) {
         return catchError(error);

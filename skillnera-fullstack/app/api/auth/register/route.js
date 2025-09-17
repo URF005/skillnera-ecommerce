@@ -35,7 +35,7 @@ export async function POST(request) {
     }
 
     // --- MLM: read referral cookie (if present) ---
-    const cookieStore = cookies();
+    const cookieStore = await cookies(); // Await the cookies() function
     const refCode = cookieStore.get("ref_code")?.value || null;
 
     let referredBy = null;
@@ -78,7 +78,7 @@ export async function POST(request) {
     // success response + clear referral cookie
     const res = NextResponse.json({
       success: true,
-      message: "Registration success, Please verify your email address.",
+      message: "Registration successful! Please verify your email and device. A verification link was sent to your registered email. Check your inbox, spam, and trash folders.",
     });
     res.cookies.set("ref_code", "", { path: "/", maxAge: 0 });
     return res;

@@ -39,7 +39,7 @@ export async function POST(request) {
         if (!otpSendStatus.success) {
             return response(false, 400, 'Failed to resend otp.')
         }
-        return response(true, 200, 'OTP sent successfully.')
+        return response(true, 200, 'OTP sent successfully. Please check your email inbox, spam, and trash folders for the OTP.')
 
     } catch (error) {
         return catchError(error)

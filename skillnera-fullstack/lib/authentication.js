@@ -14,12 +14,14 @@ function readCookie(rawCookie, key) {
 
 export const isAuthenticated = async (allowed = []) => {
   try {
-    // 1) Try the standard cookies() API
+    // 1) Try the standard cookies() API (awaiting cookies to resolve the promise)
     let token = null;
     try {
-      const jar = cookies();              // can throw in some edge cases
+      const jar = await cookies(); // Awaiting cookies() to resolve
       token = jar.get("access_token")?.value || null;
-    } catch { /* noop; we'll fall back to headers */ }
+    } catch {
+      // noop; we'll fall back to headers
+    }
 
     // 2) Fallback: parse Cookie header (works everywhere)
     if (!token) {
@@ -39,15 +41,17 @@ export const isAuthenticated = async (allowed = []) => {
 
     if (!token) return { isAuth: false };
 
+    // Verify the JWT token
     const { payload } = await jwtVerify(
       token,
       new TextEncoder().encode(process.env.SECRET_KEY)
     );
 
-    // normalize payload shape (some places use userId, others _id)
+    // Normalize payload shape (some places use userId, others _id)
     const role = payload.role;
     const userId = payload.userId || payload._id;
 
+    // Check if the role is allowed
     const allowedRoles = Array.isArray(allowed) ? allowed : [allowed].filter(Boolean);
     const ok =
       allowedRoles.length === 0 ? Boolean(userId) : allowedRoles.includes(role);

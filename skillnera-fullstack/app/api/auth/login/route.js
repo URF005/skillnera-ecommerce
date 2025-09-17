@@ -7,7 +7,7 @@ import { zSchema } from "@/lib/zodSchema";
 import OTPModel from "@/models/Otp.model";
 import UserModel from "@/models/User.model";
 import { SignJWT } from "jose";
-import { cookies } from "next/headers";
+import { cookies } from "next/headers"; // Import cookies
 import { z } from "zod";
 
 export async function POST(request) {
@@ -58,7 +58,8 @@ export async function POST(request) {
         .sign(new TextEncoder().encode(process.env.SECRET_KEY));
 
       // set auth cookie immediately
-      cookies().set("access_token", token, {
+      const cookieStore = await cookies(); // Await cookies
+      cookieStore.set("access_token", token, {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
@@ -96,7 +97,7 @@ export async function POST(request) {
       return response(
         false,
         401,
-        "Your email is not verified. We have sent a verification link to your registered email address."
+        "Please verify your device. Your email is not verified. We have sent a verification link to your registered email address. Check your email inbox, spam, and trash folders for the verification details."
       );
     }
 
@@ -121,7 +122,7 @@ export async function POST(request) {
     const newOtpData = new OTPModel({ email, otp: OTP });
     await newOtpData.save();
 
-    return response(true, 200, "Please verify your device.");
+    return response(true, 200, "Please verify your device. Check your email inbox, spam, and trash folders for the verification details..");
   } catch (error) {
     return catchError(error);
   }
